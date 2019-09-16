@@ -1,0 +1,89 @@
+﻿@using FinancialPortals.ViewModel;
+@using FinancialPortals.Models;
+
+
+@{
+    ViewBag.Title = "Home Page";
+}
+
+@model FinancialPortals.ViewModel.HouseholdViewModel
+
+@if (User.IsInRole("Lobbyist"))
+{
+<div class="col-md-8 col-12 mr-auto ml-auto">
+    <div class="wizard-container">
+        <div class="card card-wizard" data-color="rose" id="wizardProfile">            
+                <!--        You can switch " data-color="primary" "  with one of the next bright colors: "green", "orange", "red", "blue"       -->
+                <div class="card-header text-center">
+                    <h3 class="card-title">
+                        Build Your Household
+                    </h3>
+                </div>
+                <div class="wizard-navigation">
+                    <ul class="nav nav-pills">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#newHouse" data-toggle="tab" role="tab">
+                                Create New Household
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="newHouse">
+                            <h5 class="info-text"> Household Name</h5>
+                                    @using (Html.BeginForm("Create", "Households", FormMethod.Post))
+                                    {
+
+
+                                        @Html.AntiForgeryToken()
+                            <div class="row justify-content-center">
+                                <div class="col-sm-6">
+                                        <div class="form-horizontal">  
+                                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.Household.Name, htmlAttributes: new { @class = "control-label col-md-4" })
+                                                <div class="col-md-8">
+                                                    @Html.EditorFor(model => model.Household.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                                    @Html.ValidationMessageFor(model => model.Household.Name, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.Household.Greeting, htmlAttributes: new { @class = "control-label col-md-4" })
+                                                <div class="col-md-8">
+                                                    @Html.EditorFor(model => model.Household.Greeting, new { htmlAttributes = new { @class = "form-control" } })
+                                                    @Html.ValidationMessageFor(model => model.Household.Greeting, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="col-md-offset-2 col-md-10">
+                                                    <button type="submit" value="Create" class="btn btn-default">Create</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                </div>
+                            </div>
+                                    }
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        @Html.ActionLink("Back to Lobby", "Lobby", "Home")
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+}
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            // Initialise the wizard
+            demo.initMaterialWizard();
+            setTimeout(function () {
+                $('.card.card-wizard').addClass('active');
+            }, 0);
+        });
+    </script>
+
+}

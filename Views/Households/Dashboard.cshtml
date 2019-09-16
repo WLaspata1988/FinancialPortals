@@ -1,0 +1,494 @@
+﻿@using System.Globalization;
+@using FinancialPortals.Models;
+@using FinancialPortals.Enumerations;
+@using FinancialPortals.Helpers;
+@using FinancialPortals.ViewModel;
+@using Microsoft.AspNet.Identity;
+
+
+
+
+@model FinancialPortals.ViewModel.HouseholdViewModel
+
+
+
+
+@{
+    var db = new ApplicationDbContext();
+    var user = db.Users.Find(User.Identity.GetUserId());
+    var houseId = user.Household;
+    var mCount = houseId.Members.Count();
+    ViewBag.Title = "Dashboard";
+    var accountTypes = db.AccountTypes.AsNoTracking().AsQueryable();
+}
+
+<h2>House Dashboard</h2>
+
+
+@if (user.BankAccounts.Count() == 0)
+{
+    <div class="col-md-8 col-12 mr-auto ml-auto">
+        <div class="wizard-container">
+            @using (Html.BeginForm("WizardSubmit", "Households", FormMethod.Post))
+            {
+                @Html.Hidden("houseId", Model.Household.Id)
+                @Html.AntiForgeryToken()
+                <div class="card card-wizard" data-color="rose" id="wizardProfile">
+                    <!--        You can switch " data-color="primary" "  with one of the next bright colors: "green", "orange", "red", "blue"       -->
+                    <div class="card-header text-center">
+                        <h3 class="card-title">
+                            Build Your Profile
+                        </h3>
+                        <h5 class="card-description">This information will let us know more about you.</h5> @mCount
+                    </div>
+                    <div class="wizard-navigation">
+                        <ul class="nav nav-pills">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#bankAccount" data-toggle="tab" role="tab">
+                                    Bank Account
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#budgeCat" data-toggle="tab" role="tab">
+                                    Budget Categories
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#budgeItem" data-toggle="tab" role="tab">
+                                    Budget Items
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="bankAccount">
+                                <h5 class="info-text"> What are you doing? (checkboxes) </h5>
+
+                                <div class="row justify-content-center">
+                                    <div class="col-lg-10">
+                                        <div class="form-horizontal">
+                                            <h4>BankAccount</h4>
+                                            <hr />
+                                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                            <fieldset>
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => Model.BankAccount.AccountType, "Account Type-Select One", htmlAttributes: new { @class = "control-label col-md-4" })
+                                                    <div class="col-md-8">
+                                                        @Html.DropDownList("BankAccount.AccountTypeId", EnumHelper.GetSelectList(typeof(FinancialPortals.Enumerations.AccountTypeName)), "Select Account", htmlAttributes: new { @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => Model.BankAccount.AccountType, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                                <br />
+                                                <br />
+
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.BankAccount.StartingBalance, htmlAttributes: new { @class = "control-label col-md-4" })
+                                                    <div class="col-md-8">
+                                                        @Html.EditorFor(model => model.BankAccount.StartingBalance, new { htmlAttributes = new { @class = "form-control" } })
+                                                        @Html.ValidationMessageFor(model => model.BankAccount.StartingBalance, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.BankAccount.CurrentBalance, htmlAttributes: new { @class = "control-label col-md-4" })
+                                                    <div class="col-md-8">
+                                                        @Html.EditorFor(model => model.BankAccount.CurrentBalance, new { htmlAttributes = new { @class = "form-control" } })
+                                                        @Html.ValidationMessageFor(model => model.BankAccount.CurrentBalance, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.BankAccount.LowBalance, htmlAttributes: new { @class = "control-label col-md-4" })
+                                                    <div class="col-md-8">
+                                                        @Html.EditorFor(model => model.BankAccount.LowBalance, new { htmlAttributes = new { @class = "form-control" } })
+                                                        @Html.ValidationMessageFor(model => model.BankAccount.LowBalance, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.BankAccount.Name, htmlAttributes: new { @class = "control-label col-md-4" })
+                                                    <div class="col-md-8">
+                                                        @Html.EditorFor(model => model.BankAccount.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                                        @Html.ValidationMessageFor(model => model.BankAccount.Name, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.BankAccount.Description, htmlAttributes: new { @class = "control-label col-md-4" })
+                                                    <div class="col-md-8">
+                                                        @Html.EditorFor(model => model.BankAccount.Description, new { htmlAttributes = new { @class = "form-control" } })
+                                                        @Html.ValidationMessageFor(model => model.BankAccount.Description, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.BankAccount.Address1, htmlAttributes: new { @class = "control-label col-md-4" })
+                                                    <div class="col-md-8">
+                                                        @Html.EditorFor(model => model.BankAccount.Address1, new { htmlAttributes = new { @class = "form-control" } })
+                                                        @Html.ValidationMessageFor(model => model.BankAccount.Address1, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.BankAccount.Address2, htmlAttributes: new { @class = "control-label col-md-4" })
+                                                    <div class="col-md-8">
+                                                        @Html.EditorFor(model => model.BankAccount.Address2, new { htmlAttributes = new { @class = "form-control" } })
+                                                        @Html.ValidationMessageFor(model => model.BankAccount.Address2, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.BankAccount.City, htmlAttributes: new { @class = "control-label col-md-4" })
+                                                    <div class="col-md-8">
+                                                        @Html.EditorFor(model => model.BankAccount.City, new { htmlAttributes = new { @class = "form-control" } })
+                                                        @Html.ValidationMessageFor(model => model.BankAccount.City, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.BankAccount.State, htmlAttributes: new { @class = "control-label col-md-4" })
+                                                    <div class="col-md-8">
+                                                        @Html.EnumDropDownListFor(model => model.BankAccount.State, htmlAttributes: new { @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.BankAccount.State, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                                <br />
+                                                <br />
+
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.BankAccount.Zip, htmlAttributes: new { @class = "control-label col-md-4" })
+                                                    <div class="col-md-8">
+                                                        @Html.EditorFor(model => model.BankAccount.Zip, new { htmlAttributes = new { @class = "form-control" } })
+                                                        @Html.ValidationMessageFor(model => model.BankAccount.Zip, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.BankAccount.Phone, htmlAttributes: new { @class = "control-label col-md-4" })
+                                                    <div class="col-md-8">
+                                                        @Html.EditorFor(model => model.BankAccount.Phone, new { htmlAttributes = new { @class = "form-control" } })
+                                                        @Html.ValidationMessageFor(model => model.BankAccount.Phone, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="budgeCat">
+                                <div class="row justify-content-center">
+                                    <div class="col-sm-12">
+                                        <h5 class="info-text"> Are you living in a nice area? </h5>
+                                        <fieldset>
+
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.BudgetCategory.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                                                <div class="col-md-8">
+                                                    @Html.EditorFor(model => model.BudgetCategory.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                                    @Html.ValidationMessageFor(model => model.BudgetCategory.Name, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.BudgetCategory.Target, htmlAttributes: new { @class = "control-label col-md-2" })
+                                                <div class="col-md-8">
+                                                    @Html.EditorFor(model => model.BudgetCategory.Target, new { htmlAttributes = new { @class = "form-control" } })
+                                                    @Html.ValidationMessageFor(model => model.BudgetCategory.Target, "", new { @class = "text-danger" })
+                                                </div>
+
+
+                                            </div>
+                                        </fieldset>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="budgeItem">
+                                <h5 class="info-text"> What are you doing? (checkboxes) </h5>
+                                <fieldset>
+                                    <div class="row justify-content-center">
+
+                                        <div class="col-lg-10">
+
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.BudgetCategoryItem.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                                                <div class="col-md-10">
+                                                    @Html.EditorFor(model => model.BudgetCategoryItem.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                                    @Html.ValidationMessageFor(model => model.BudgetCategoryItem.Name, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.BudgetCategoryItem.Target, htmlAttributes: new { @class = "control-label col-md-2" })
+                                                <div class="col-md-10">
+                                                    @Html.EditorFor(model => model.BudgetCategoryItem.Target, new { htmlAttributes = new { @class = "form-control" } })
+                                                    @Html.ValidationMessageFor(model => model.BudgetCategoryItem.Target, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="mr-auto">
+                            <input type="button" class="btn btn-previous btn-fill btn-default btn-wd disabled" name="previous" value="Previous">
+                        </div>
+                        <div class="ml-auto">
+                            <input type="button" class="btn btn-next btn-fill btn-rose btn-wd" name="next" value="Next">
+                            <input type="submit" class="btn btn-finish btn-fill btn-rose btn-wd" name="finish" value="Finish" style="display: none;">
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+
+                </div>
+            }
+        </div>
+    </div>
+}
+else
+{
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header card-header-icon card-header-rose">
+                <div class="card-icon">
+                    <i class="material-icons">account_balance</i>
+                </div>
+                <h4 class="card-title ">Checking Account Information</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class=" text-primary">
+                            <tr>
+                                <th>
+                                    Account Type
+                                </th>
+                                <th>
+                                    Owner
+                                </th>
+                                <th>
+                                    Starting Balance
+                                </th>
+                                <th>
+                                    Current Balance
+                                </th>
+                                <th>
+                                    Bank Name
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                @foreach (var account in user.BankAccounts.Where(b => b.AccountType.Id == 2))
+                                {
+                                    <td>
+                                        @account.AccountType.Type
+                                    </td>
+                                    <td>
+                                        @account.Owner.FullName
+                                    </td>
+                                    <td>
+                                        @account.StartingBalance
+                                    </td>
+                                    <td>
+                                        @account.CurrentBalance
+                                    </td>
+                                    <td>
+                                        @account.Name
+                                    </td>
+                                }
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header card-header-icon card-header-rose">
+                <div class="card-icon">
+                    <i class="material-icons">account_balance</i>
+                </div>
+                <h4 class="card-title ">Savings Account Information</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class=" text-primary">
+                            <tr>
+                                <th>
+                                    Account Type
+                                </th>
+                                <th>
+                                    Owner
+                                </th>
+                                <th>
+                                    Starting Balance
+                                </th>
+                                <th>
+                                    Current Balance
+                                </th>
+                                <th>
+                                    Bank Name
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                @foreach (var account in user.BankAccounts.Where(b => b.AccountType.Id == 1))
+                                {
+                                    <td>
+                                        @account.AccountType.Type
+                                    </td>
+                                    <td>
+                                        @account.Owner.FullName
+                                    </td>
+                                    <td>
+                                        @account.StartingBalance
+                                    </td>
+                                    <td>
+                                        @account.CurrentBalance
+                                    </td>
+                                    <td>
+                                        @account.Name
+                                    </td>
+                                }
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header card-header-icon card-header-rose">
+                    <div class="card-icon">
+                        <i class="material-icons">table_chart</i>
+                    </div>
+                    <h4 class="card-title ">Budget</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class=" text-primary">
+                                <tr>
+                                    <th>
+                                        Budget Category
+                                    </th>
+                                    <th>
+                                        Target Spending Amount
+                                    </th>
+                                    <th>
+                                        Actual Spending Amount
+                                    </th>
+                                    <th>
+                                        Budget Item
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var cat in user.Household.BudgetCategories)
+                                {
+                                <tr>
+                                    <td>
+                                        @cat.Name
+                                    </td>
+                                    <td>
+                                        @cat.Target
+                                    </td>
+                                    <td>
+                                        @cat.Actual
+                                    </td>
+                                    @foreach (var item in cat.BudgetItems)
+                                    {
+                                    <td>
+                                        @item.Name
+                                    </td>
+                                    }
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header card-header-icon card-header-rose">
+                    <div class="card-icon">
+                        <i class="material-icons">table_chart</i>
+                    </div>
+                    <h4 class="card-title ">Transactions</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class=" text-primary">
+                                <tr>
+                                    <th>
+                                        Account Type
+                                    </th>
+                                    <th>
+                                        Owner
+                                    </th>
+                                    <th>
+                                        Starting Balance
+                                    </th>
+                                    <th>
+                                        Current Balance
+                                    </th>
+                                    <th>
+                                        Bank Name
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        @Model.AccountType.Type
+                                    </td>
+                                    <td>
+                                        @Model.Household.Owner.FullName
+                                    </td>
+                                    <td>
+                                        @Model.BankAccount.StartingBalance
+                                    </td>
+                                    <td>
+                                        @Model.BankAccount.CurrentBalance
+                                    </td>
+                                    <td>
+                                        @Model.BankAccount.Name
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            // Initialise the wizard
+            demo.initMaterialWizard();
+            setTimeout(function () {
+                $('.card.card-wizard').addClass('active');
+            }, 600);
+        });
+    </script>
+
+}
